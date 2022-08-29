@@ -25,6 +25,22 @@ func main() {
 	log.Println("Connected to database")
 	defer conn.Close(ctx)
 
+	tableExists, err := conn.TableExist(ctx)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	var commTag *db.CommandTag
+	if tableExists {
+		commTag, err = conn.DropTables(ctx)
+	} else {
+		commTag, err = conn.InitTables(ctx)
+	}
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	log.Println(commTag)
+
 	l, err := net.Listen("tcp", "localhost:8080")
 	if err != nil {
 		log.Fatal(err.Error())
