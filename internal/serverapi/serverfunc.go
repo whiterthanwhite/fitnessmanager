@@ -3,6 +3,8 @@ package serverapi
 import (
 	"context"
 	"encoding/json"
+	"io/ioutil"
+	"log"
 	"net/http"
 	"time"
 
@@ -34,6 +36,24 @@ func getTraining() *fitnessdata.Record {
 
 func InsertRecord(ctx context.Context, conn *db.Conn) http.HandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
-		rw.Write([]byte("Successful insert"))
+		var requestBody []byte
+		var err error
+
+		requestBody, err = ioutil.ReadAll(r.Body)
+		if err != nil {
+			http.Error(rw, err.Error()+" cannot read request body", http.StatusInternalServerError)
+			return
+		}
+		var record fitnessdata.Record
+		if err = json.Unmarshal(requestBody, &record); err != nil {
+			http.Error(rw, err.Error()+" cannot unmarshal request body", http.StatusInternalServerError)
+			return
+		}
+		ct, err := conn.InsertRecord(ctx, &record)
+		if err != nil {
+			http.Error(rw, err.Error()+" cannot insert record", http.StatusInternalServerError)
+			return
+		}
+		log.Printf("Function \"InsertRecord\"; rows affected: %v; info: %v", ct.RowsAffected, ct.Info)
 	}
 }

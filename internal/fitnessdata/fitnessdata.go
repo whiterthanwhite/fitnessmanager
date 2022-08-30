@@ -5,9 +5,9 @@ import (
 )
 
 type Record struct {
-	Date        time.Time
-	Name        string
-	Take        int
-	Repetitions int
-	Description string
+	Date        time.Time `json:"date"`
+	Name        string    `json:"name"`
+	Take        int       `json:"take"`
+	Repetitions int       `json:"repetitions"`
+	Description string    `json:"description"`
 }
