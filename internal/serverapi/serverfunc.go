@@ -1,10 +1,12 @@
 package serverapi
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 	"time"
 
+	"github.com/whiterthanwhite/fitnessmanager/internal/db"
 	"github.com/whiterthanwhite/fitnessmanager/internal/fitnessdata"
 )
 
@@ -27,5 +29,11 @@ func getTraining() *fitnessdata.Record {
 		Take:        1,
 		Repetitions: 10,
 		Description: "some description",
+	}
+}
+
+func InsertRecord(ctx context.Context, conn *db.Conn) http.HandlerFunc {
+	return func(rw http.ResponseWriter, r *http.Request) {
+		rw.Write([]byte("Successful insert"))
 	}
 }

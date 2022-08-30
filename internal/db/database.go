@@ -4,6 +4,8 @@ import (
 	"context"
 
 	"github.com/jackc/pgx/v4"
+
+	"github.com/whiterthanwhite/fitnessmanager/internal/fitnessdata"
 )
 
 type Conn struct {
@@ -58,4 +60,26 @@ func (conn *Conn) TableExist(ctx context.Context) (bool, error) {
 
 func (conn *Conn) Close(ctx context.Context) {
 	conn.conn.Close(ctx)
+}
+
+func (conn *Conn) InsertRecord(ctx context.Context, record *fitnessdata.Record) (*CommandTag, error) {
+	entryNo, err := conn.getLastEntryNo(ctx)
+	if err != nil {
+		return nil, err
+	}
+	ct, err := conn.conn.Exec(ctx, "insert into workout values ($1, $2, $3, $4, $5, $6);", entryNo,
+		record.Date, record.Name, record.Take, record.Repetitions, record.Description)
+	if err != nil {
+		return nil, err
+	}
+	return &CommandTag{ct.RowsAffected(), ct.String()}, nil
+}
+
+func (conn *Conn) getLastEntryNo(ctx context.Context) (int, error) {
+	var entryNo int = 0
+	if err := conn.conn.QueryRow(ctx, "select entry_no from workout order entry_no desc limit 1;").
+		Scan(&entryNo); err != nil {
+		return entryNo, err
+	}
+	return entryNo + 1, nil
 }

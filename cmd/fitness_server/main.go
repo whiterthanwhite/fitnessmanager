@@ -32,14 +32,16 @@ func main() {
 
 	var commTag *db.CommandTag
 	if tableExists {
-		commTag, err = conn.DropTables(ctx)
+		// commTag, err = conn.DropTables(ctx)
 	} else {
 		commTag, err = conn.InitTables(ctx)
 	}
 	if err != nil {
 		log.Fatal(err.Error())
 	}
-	log.Println(commTag)
+	if commTag != nil {
+		log.Println(commTag)
+	}
 
 	l, err := net.Listen("tcp", "localhost:8080")
 	if err != nil {
@@ -47,6 +49,7 @@ func main() {
 	}
 	sm := http.NewServeMux()
 	sm.HandleFunc("/", serverapi.GetTrainingRecord())
+	sm.HandleFunc("/insert", serverapi.InsertRecord(ctx, conn))
 
 	s := &http.Server{
 		Handler: sm,
