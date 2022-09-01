@@ -6,31 +6,64 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/whiterthanwhite/fitnessmanager/internal/db"
 	"github.com/whiterthanwhite/fitnessmanager/internal/fitnessdata"
 )
 
-func GetTrainingRecord() http.HandlerFunc {
+func GetTrainingRecordByEntryNo(ctx context.Context, conn *db.Conn) http.HandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
-		t := getTraining()
-		responce, err := json.Marshal(&t)
+		u := r.URL
+		v := u.Query()
+		if !v.Has("entry_no") {
+			http.Error(rw, "value entry_no is missed", http.StatusBadRequest)
+			return
+		}
+		entryNo, err := strconv.ParseInt(v.Get("entry_no"), 0, 64)
 		if err != nil {
 			http.Error(rw, err.Error(), http.StatusInternalServerError)
+			return
 		}
-		rw.Write(responce)
+		record, err := conn.GetRecordByEntryNo(ctx, int(entryNo))
+		if err != nil {
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		responseBody, err := json.Marshal(&record)
+		if err != nil {
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		rw.Write(responseBody)
 	}
 }
 
-// test
-func getTraining() *fitnessdata.Record {
-	return &fitnessdata.Record{
-		Date:        time.Now(),
-		Name:        "test",
-		Take:        1,
-		Repetitions: 10,
-		Description: "some description",
+func GetTrainingRecordByDate(ctx context.Context, conn *db.Conn) http.HandlerFunc {
+	return func(rw http.ResponseWriter, r *http.Request) {
+		u := r.URL
+		v := u.Query()
+		if !v.Has("entry_no") {
+			http.Error(rw, "value entry_no is missed", http.StatusBadRequest)
+			return
+		}
+		date, err := time.Parse("", v.Get("date"))
+		if err != nil {
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		records, err := conn.GetRecordByDate(ctx, date)
+		if err != nil {
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		responseBody, err := json.Marshal(records)
+		if err != nil {
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		rw.Write(responseBody)
 	}
 }
 

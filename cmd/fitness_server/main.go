@@ -48,8 +48,9 @@ func main() {
 		log.Fatal(err.Error())
 	}
 	sm := http.NewServeMux()
-	sm.HandleFunc("/", serverapi.GetTrainingRecord())
-	sm.HandleFunc("/insert", serverapi.InsertRecord(ctx, conn))
+	sm.HandleFunc("/training/entry_no", serverapi.GetTrainingRecordByEntryNo(ctx, conn))
+	sm.HandleFunc("/training/date", serverapi.GetTrainingRecordByDate(ctx, conn))
+	sm.HandleFunc("/training/insert", serverapi.InsertRecord(ctx, conn))
 
 	s := &http.Server{
 		Handler: sm,
