@@ -49,7 +49,7 @@ func main() {
 	}
 	sm := http.NewServeMux()
 	sm.HandleFunc("/training/entry_no", serverapi.GetTrainingRecordByEntryNo(ctx, conn))
-	sm.HandleFunc("/training/date", serverapi.GetTrainingRecordByDate(ctx, conn))
+	sm.HandleFunc("/training/date", serverapi.GetTrainingRecordsByDate(ctx, conn))
 	sm.HandleFunc("/training/insert", serverapi.InsertRecord(ctx, conn))
 
 	s := &http.Server{

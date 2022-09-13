@@ -13,6 +13,14 @@ import (
 	"github.com/whiterthanwhite/fitnessmanager/internal/db"
 )
 
+func TestGetTrainingRecordByEntryNo(t *testing.T) {
+
+}
+
+func TestGetTrainingRecordsByDate(t *testing.T) {
+
+}
+
 func TestInsertRecord(t *testing.T) {
 	ctx := context.Background()
 	conn, err := db.Connect(ctx, "postgresql://localhost:5432/postgres")

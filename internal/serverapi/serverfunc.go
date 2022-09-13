@@ -40,7 +40,7 @@ func GetTrainingRecordByEntryNo(ctx context.Context, conn *db.Conn) http.Handler
 	}
 }
 
-func GetTrainingRecordByDate(ctx context.Context, conn *db.Conn) http.HandlerFunc {
+func GetTrainingRecordsByDate(ctx context.Context, conn *db.Conn) http.HandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
 		u := r.URL
 		v := u.Query()
