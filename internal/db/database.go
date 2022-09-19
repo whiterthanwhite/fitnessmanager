@@ -64,7 +64,7 @@ func (conn *Conn) Close(ctx context.Context) {
 }
 
 func (conn *Conn) InsertRecord(ctx context.Context, record *fitnessdata.Record) (*CommandTag, error) {
-	entryNo, err := conn.getLastEntryNo(ctx)
+	entryNo, err := conn.GetLastEntryNo(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -76,7 +76,7 @@ func (conn *Conn) InsertRecord(ctx context.Context, record *fitnessdata.Record) 
 	return &CommandTag{ct.RowsAffected(), ct.String()}, nil
 }
 
-func (conn *Conn) getLastEntryNo(ctx context.Context) (int, error) {
+func (conn *Conn) GetLastEntryNo(ctx context.Context) (int, error) {
 	var entryNo int = 0
 	if err := conn.conn.QueryRow(ctx, "select entry_no from workout order by entry_no desc limit 1;").
 		Scan(&entryNo); err != nil {

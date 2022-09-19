@@ -3,6 +3,7 @@ package serverapi
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -12,6 +13,19 @@ import (
 	"github.com/whiterthanwhite/fitnessmanager/internal/db"
 	"github.com/whiterthanwhite/fitnessmanager/internal/fitnessdata"
 )
+
+func GetLastEntryNo(ctx context.Context, conn *db.Conn) http.HandlerFunc {
+	return func(rw http.ResponseWriter, r *http.Request) {
+		lastEntryNo, err := conn.GetLastEntryNo(ctx)
+		if err != nil {
+			http.Error(rw, err.Error(), http.StatusBadRequest)
+			return
+		}
+		strLastEntryNo := fmt.Sprint(lastEntryNo)
+		log.Println(strLastEntryNo)
+		rw.Write([]byte(strLastEntryNo))
+	}
+}
 
 func GetTrainingRecordByEntryNo(ctx context.Context, conn *db.Conn) http.HandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
